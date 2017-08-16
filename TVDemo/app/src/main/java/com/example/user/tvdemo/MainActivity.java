@@ -79,6 +79,21 @@ public class MainActivity extends Activity {
         button4.setBackgroundResource(R.drawable.focus_background);
         button1.requestFocus();
 
+        View.OnHoverListener hoverListener = new View.OnHoverListener() {
+            @Override
+            public boolean onHover(View v, MotionEvent event) {
+                if (v.isHovered())
+                    v.requestFocus();
+                return false;
+
+            }
+        };
+
+        button1.setOnHoverListener(hoverListener);
+        button2.setOnHoverListener(hoverListener);
+        button3.setOnHoverListener(hoverListener);
+        button4.setOnHoverListener(hoverListener);
+
         //test....
 
 
