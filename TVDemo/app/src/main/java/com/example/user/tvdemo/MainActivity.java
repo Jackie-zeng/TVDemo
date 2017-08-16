@@ -79,6 +79,8 @@ public class MainActivity extends Activity {
         button4.setBackgroundResource(R.drawable.focus_background);
         button1.requestFocus();
 
+        //test....
+
 
 
     }
