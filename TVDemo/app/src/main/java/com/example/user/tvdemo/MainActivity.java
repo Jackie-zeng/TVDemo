@@ -49,6 +49,11 @@ public class MainActivity extends Activity {
             mDataList.add("msg"+(i+1));
         }
     }
+    {
+        for (int i = 0; i < 20; i++) {
+            mDataList.add("msg"+(i+1));
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
