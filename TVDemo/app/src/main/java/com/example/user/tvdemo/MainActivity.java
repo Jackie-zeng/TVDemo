@@ -15,7 +15,7 @@
 package com.example.user.tvdemo;
 
 import android.app.Activity;
-import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,9 +24,9 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,14 +41,10 @@ public class MainActivity extends Activity {
     private Button button2;
     private Button button3;
     private Button button4;
+
     private RecyclerView mRecyclerView;
     private List<String> mDataList = new ArrayList<>();
 
-    {
-        for (int i = 0; i < 20; i++) {
-            mDataList.add("msg"+(i+1));
-        }
-    }
     {
         for (int i = 0; i < 20; i++) {
             mDataList.add("msg"+(i+1));
@@ -70,11 +66,19 @@ public class MainActivity extends Activity {
 
         mRecyclerView.getAdapter().notifyDataSetChanged();
         mRecyclerView.setFocusable(true);
-        button1.setBackgroundResource(R.drawable.foucus_background);
-        button2.setBackgroundResource(R.drawable.foucus_background);
-        button3.setBackgroundResource(R.drawable.foucus_background);
-        button4.setBackgroundResource(R.drawable.foucus_background);
+        mRecyclerView.setFocusableInTouchMode(true);
+
+        button1.setFocusableInTouchMode(true);
+        button2.setFocusableInTouchMode(true);
+        button3.setFocusableInTouchMode(true);
+        button4.setFocusableInTouchMode(true);
+
+        button1.setBackgroundResource(R.drawable.focus_background);
+        button2.setBackgroundResource(R.drawable.focus_background);
+        button3.setBackgroundResource(R.drawable.focus_background);
+        button4.setBackgroundResource(R.drawable.focus_background);
         button1.requestFocus();
+
     }
 
     private class RecyclerAdapter extends RecyclerView.Adapter{
@@ -82,18 +86,28 @@ public class MainActivity extends Activity {
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(MainActivity.this).inflate(android.R.layout.simple_list_item_1,null);
-            return new ViewHolders(view);
+            ViewHolders holder = new ViewHolders(view);
+            RecyclerView.LayoutParams p = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+            holder.textView.setLayoutParams(p);
+            holder.textView.setGravity(Gravity.CENTER);
+            holder.textView.setFocusableInTouchMode(true);
+            return holder;
         }
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
 
-            ViewHolders viewHolder = (ViewHolders) holder;
+            final ViewHolders viewHolder = (ViewHolders) holder;
             viewHolder.textView.setText(mDataList.get(position));
-            RecyclerView.LayoutParams p = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-            viewHolder.textView.setLayoutParams(p);
-            viewHolder.textView.setGravity(Gravity.CENTER);
+            viewHolder.itemView.setOnHoverListener(new View.OnHoverListener() {
+                @Override
+                public boolean onHover(View v, MotionEvent event) {
 
+                    if (v.isHovered())
+                        v.requestFocus();
+                    return false;
+                }
+            });
             viewHolder.itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
@@ -103,14 +117,32 @@ public class MainActivity extends Activity {
                     if (position!=0&&position!=mDataList.size()-1&&bottom<=height-30&&top>10){
 
                         if (v.hasFocus()) {
+                            v.setBackgroundResource(R.drawable.focus);
                             ViewCompat.animate(v).scaleX(1.5f).scaleY(1.5f).translationZ(2).start();
                         } else {
+                            v.setBackgroundResource(R.drawable.not_focus);
                             ViewCompat.animate(v).scaleX(1f).scaleY(1f).translationZ(0).start();
                         }
 
                     }
+                    else{
+                        ViewCompat.animate(v).scaleX(1f).scaleY(1f).translationZ(0).start();
+                        if (v.hasFocus()) {
+                            v.setBackgroundResource(R.drawable.focus);
+                        } else {
+                            v.setBackgroundResource(R.drawable.not_focus);
+                        }
+                    }
                 }
             });
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = DetailActivity.newIntent(MainActivity.this,viewHolder.textView.getText().toString());
+                    startActivity(intent);
+                }
+            });
+
         }
 
         @Override
@@ -122,30 +154,26 @@ public class MainActivity extends Activity {
     private class ViewHolders extends RecyclerView.ViewHolder{
 
         TextView textView;
-
-        public ViewHolders(View itemView) {
+         ViewHolders(View itemView) {
             super(itemView);
-
             itemView.setFocusable(true);
-            itemView.setBackgroundResource(R.drawable.foucus_background);
+            itemView.setBackgroundResource(R.drawable.focus_background);
             textView = (TextView) itemView.findViewById(android.R.id.text1);
-
         }
+
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        Log.e("MainActivity: onKeyDown", keyCode+"");
+
         View v = getCurrentFocus();
         if (v!=null){
             switch (v.getId()){
                 case R.id.button1:
                     showToast("button1");
-
                     break;
                 case R.id.button2:
                     showToast("button2");
-
                     break;
                 case R.id.button3:
                     showToast("button3");
@@ -154,7 +182,6 @@ public class MainActivity extends Activity {
                     showToast("button4");
                     break;
                 case R.id.recycler:
-                  //  View chlid =
                     showToast("recycler");
                      break;
             }
@@ -166,7 +193,5 @@ public class MainActivity extends Activity {
         String msg = "current focus view is_";
         Toast.makeText(this,msg+which,Toast.LENGTH_SHORT).show();
     }
-
-
 
 }

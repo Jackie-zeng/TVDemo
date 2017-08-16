@@ -8,6 +8,23 @@
             <stroke android:color="@color/lb_details_description_body_color" android:width="5px"/>
         </shape>
     </item>
+
+   <item android:state_hovered="true">
+        <shape android:shape="rectangle" >
+            <corners android:radius="5px"/>
+            <solid android:color="@color/detail_background"/>
+            <stroke android:color="@color/lb_details_description_body_color" android:width="5px"/>
+        </shape>
+    </item>
+
+
+   <item android:state_hovered="false" >
+        <shape android:shape="rectangle" >
+            <corners android:radius="0px"/>
+            <stroke android:color="@color/lb_details_description_body_color" android:width="0px"/>
+        </shape>
+    </item>
+
    <item android:state_focused="false">
         <shape android:shape="rectangle" >
             <corners android:radius="0px"/>
